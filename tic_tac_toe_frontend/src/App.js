@@ -221,9 +221,17 @@ function App() {
 
   // Minimalistic Board rendering, with ripple animation on click
   function renderSquare(idx) {
+    // Assign .x or .o class for 3D effect when filled, else default.
+    const filledClass =
+      squares[idx] === 'X'
+        ? 'ttt-square x'
+        : squares[idx] === 'O'
+        ? 'ttt-square o'
+        : 'ttt-square';
+
     return (
       <button
-        className="ttt-square"
+        className={filledClass}
         onClick={() => handleClick(idx)}
         disabled={
           !!squares[idx] ||

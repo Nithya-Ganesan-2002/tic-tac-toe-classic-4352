@@ -92,6 +92,7 @@
   filter: brightness(98%);
 }
 
+/* 3D Tic Tac Toe Square Styling */
 .ttt-square {
   width: 100%;
   aspect-ratio: 1;
@@ -101,7 +102,12 @@
   background: #fff;
   outline: none;
   cursor: pointer;
-  transition: background 0.16s, color 0.17s, box-shadow 0.22s;
+  transition: 
+    background 0.16s, 
+    color 0.17s, 
+    box-shadow 0.22s, 
+    filter 0.14s,
+    transform 0.19s;
   color: var(--primary);
   padding: 0;
   border-radius: 10px;
@@ -110,7 +116,100 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
+  /* 3D: Default subtle "rest" depth */
 }
+
+.ttt-square.x,
+.ttt-square.o {
+  /* Pop-out 3D effect (when filled) */
+  background: linear-gradient(180deg, #fff 80%, #f3f4fa 100%);
+  box-shadow:
+    0 4px 20px 0 rgba(25, 118, 210, 0.11),
+    0 2px 7.5px 1px var(--accent);
+  /* Text-shadow for 3D glyph pop */
+  text-shadow:
+    0 2.5px 0 #e2e4ee, 
+    0 7px 2.5px rgba(25, 118, 210, 0.11), 
+    0 1.5px 0 var(--accent);
+  will-change: box-shadow, transform, filter;
+  filter: brightness(101%);
+  transition: 
+    background 0.17s, 
+    color 0.15s, 
+    box-shadow 0.24s, 
+    filter 0.18s, 
+    transform 0.17s;
+}
+
+.ttt-square.x {
+  /* Primary blue accent shadow for X */
+  box-shadow:
+    0 5.5px 30px 0 rgba(25, 118, 210, 0.14),
+    0 2.5px 11px 0 #e8eeff inset;
+  color: var(--primary);
+  text-shadow:
+    0 2.5px 0 #e2eafe, 
+    0 5.2px 7px #1976d252, 
+    0 1.2px 0 var(--primary);
+}
+.ttt-square.o {
+  /* Gold shadow for O */
+  box-shadow:
+    0 5.5px 30px 0 rgba(255, 202, 40, 0.13),
+    0 2px 9px 0 #fff7e0 inset;
+  color: var(--accent);
+  text-shadow:
+    0 2.5px 0 #fcf5df, 
+    0 5.2px 7px #ffca2848, 
+    0 1.6px 0 var(--accent);
+}
+
+/* Pop in a little on hover for 3D feel */
+.ttt-square:not([disabled]):hover.x,
+.ttt-square:not([disabled]):hover.o {
+  background: linear-gradient(180deg, #f6faff 70%, #edf1fa 100%);
+  box-shadow:
+    0 9px 28px 0 rgba(25, 118, 210, 0.18), 
+    0 2.5px 12px 0 #edf3ff inset,
+    0 0px 0 0 #ff0; /* clean up . */
+  filter: brightness(104%);
+  transform: translateY(-2px) scale(1.022);
+}
+.ttt-square:not([disabled]):hover.o {
+  box-shadow:
+    0 8.5px 28px 0 rgba(255, 202, 40, 0.17),
+    0 2px 12px 0 #fff7e0 inset;
+  filter: brightness(104%);
+}
+/* Active: pressed-in 3D look */
+.ttt-square:active.x {
+  background: linear-gradient(180deg, #e2f0fb 66%, #dbe9f8 100%);
+  box-shadow:
+    0 2.2px 12px 0 rgba(25, 118, 210, 0.19) inset,
+    0 0px 1.5px 0 #b3bef7 inset;
+  filter: brightness(98%);
+  transform: translateY(2.5px) scale(0.984);
+}
+
+.ttt-square:active.o {
+  background: linear-gradient(180deg, #fff5e0 60%, #ffe6b5 100%);
+  box-shadow:
+    0 2.2px 12px 0 rgba(255, 202, 40, 0.19) inset,
+    0 0px 1.5px 0 #ffea80 inset;
+  filter: brightness(98%);
+  transform: translateY(2.5px) scale(0.984);
+}
+
+/* Add focus ring on 3D cells as well */
+.ttt-square:focus-visible.x,
+.ttt-square:focus-visible.o {
+  box-shadow:
+    0 0 0 2.5px var(--accent),
+    0 5.5px 30px 0 rgba(25, 118, 210, 0.13);
+  z-index: 3;
+}
+
+/* Minimal fallback for unfilled square (empty) -- unchanged */
 .ttt-square:focus-visible {
   box-shadow: 0 0 0 2.5px var(--accent);
   z-index: 3;
