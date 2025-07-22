@@ -1,13 +1,21 @@
-/* CSS Variables for Theme Management */
 :root {
-  /* Light theme colors */
+  /* Light theme (modern/minimal) with accent palette */
+  --primary: #1976d2;
+  --secondary: #424242;
+  --accent: #ffca28;
   --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #282c34;
-  --text-secondary: #61dafb;
-  --border-color: #e9ecef;
-  --button-bg: #007bff;
-  --button-text: #ffffff;
+  --bg-secondary: #f9fafe;
+  --text-primary: #232a34;
+  --text-secondary: #424242;
+  --board-shadow: 0 3.5px 22px rgba(25,118,210,0.11);
+  --input-bg: #f5f6fa;
+  --input-border: #e9ecf5;
+  --input-radius: 7px;
+  --button-shadow: 0 2.5px 16px rgba(25,118,210,0.055);
+  --button-hover-shadow: 0 4px 20px rgba(25,118,210,.13);
+  --button-bg: #1976d2;
+  --button-text: #fff;
+  --border-color: #e5eaf5;
 }
 
 [data-theme="dark"] {
@@ -29,142 +37,154 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: var(--bg-secondary);
-  min-height: unset;
-  display: block;
-  padding-bottom: 0.5em;
-  font-size: calc(10px + 2vmin);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease;
-  position: relative;
-}
-
 /* --- Tic Tac Toe Board & Controls --- */
 .ttt-board {
-  margin: 0.5em auto 0.8em auto;
-  width: min(320px, 90vw);
+  margin: 0.67em auto 1.2em auto;
+  width: min(330px, 95vw);
   aspect-ratio: 1;
+  box-shadow: var(--board-shadow);
+  background: #fff;
+  display: grid;
+  border-radius: 17px;
 }
 
-/* --- Start Game Button (minimalistic, light palette) --- */
 .start-game-btn {
   display: inline-block;
-  margin: 0 auto 1em auto;
-  font-size: 1.12rem;
-  font-weight: 600;
-  background: #1976d2;
+  margin: 0 auto 1.1em auto;
+  font-size: 1.14rem;
+  font-weight: 700;
+  background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 13px 35px;
-  box-shadow: 0 2.5px 16px rgba(25,118,210,0.055);
+  border-radius: 13px;
+  padding: 13px 38px;
+  box-shadow: var(--button-shadow);
   cursor: pointer;
-  letter-spacing: 0.065em;
-  transition: background 0.2s, box-shadow 0.22s, transform 0.11s;
+  letter-spacing: 0.08em;
+  transition: background .16s, box-shadow .21s, transform .13s, opacity .17s;
+  position: relative;
+  outline: none;
 }
 .start-game-btn:hover,
-.start-game-btn:focus {
+.start-game-btn:focus-visible {
   background: #1256a6;
-  box-shadow: 0 3.5px 20px rgba(25,118,210,0.18);
-  outline: none;
+  box-shadow: var(--button-hover-shadow);
   transform: translateY(-2px) scale(1.025);
-  opacity: 0.95;
+  opacity: 0.96;
 }
 .start-game-btn:active {
   background: #0b3765;
   transform: translateY(0);
 }
+
 .ttt-square {
   width: 100%;
   aspect-ratio: 1;
-  font-size: 2.3em;
-  font-weight: bold;
-  border: 1.8px solid #1976d2;
+  font-size: 2.39em;
+  font-weight: 700;
+  border: 2.2px solid var(--primary);
   background: #fff;
   outline: none;
   cursor: pointer;
-  transition: background 0.17s, color 0.18s;
-  color: #1976d2;
+  transition: background 0.16s, color 0.17s, box-shadow 0.22s;
+  color: var(--primary);
   padding: 0;
-  border-radius: 9px;
-  margin: 0.07em;
-  box-shadow: 0 1.5px 10px 0 rgba(25, 118, 210, 0.028);
+  border-radius: 10px;
+  margin: .085em;
+  box-shadow: 0 1.5px 10px 0 rgba(25, 118, 210, 0.034);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.ttt-square:focus-visible {
+  box-shadow: 0 0 0 2.5px var(--accent);
+  z-index: 3;
+}
+.ttt-square:not([disabled]):hover {
+  background: #f7fbff;
+  box-shadow: 0 5px 14px 0 rgba(25, 118, 210, 0.08);
+  filter: brightness(102%);
 }
 .ttt-square[disabled] {
   background: #f6f8fa;
   color: #b0b0b0;
-  cursor: default;
+  cursor: not-allowed;
+  opacity: 0.67;
 }
 .ttt-square:active:not([disabled]) {
   filter: brightness(95%);
 }
-.game-status {
-  min-height: 2.3em;
-  margin-top: 15px;
-  font-size: 1.09rem;
-  font-weight: 600;
-  text-align: center;
-  letter-spacing: 0.03em;
-}
-
-.App-link {
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
-}
-
-.theme-toggle {
+.ttt-square-effect {
+  content: "";
+  pointer-events: none;
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
+  inset: 0;
+  border-radius: 10px;
+  background: radial-gradient(circle, #ffca2840 10%, transparent 60% 100%);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ttt-square:focus-visible .ttt-square-effect,
+.ttt-square:not([disabled]):hover .ttt-square-effect {
+  opacity: 1;
+}
+
+.game-status {
+  min-height: 2.5em;
+  margin-top: 24px;
+  font-size: 1.15rem;
+  font-weight: 650;
+  text-align: center;
+  letter-spacing: 0.038em;
+  color: var(--primary);
+  transition: color 0.19s;
+  word-break: break-word;
+  opacity: 0.99;
+}
+
+select {
+  background: var(--input-bg);
+  border: 1.2px solid var(--input-border);
+  border-radius: var(--input-radius);
+  padding: 5.5px 13px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--primary);
   font-weight: 600;
+  margin-left: 2px;
+  outline: none;
+  transition: border 0.18s, background 0.18s;
+  appearance: none;
+}
+select:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+label {
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  opacity: 0.9;
-}
-
-.theme-toggle:active {
-  transform: translateY(0);
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* --- Minimalistic effects for control bar (menu and in-game) --- */
+@media (max-width: 900px) {
+  .ttt-board {
+    width: min(98vw,350px);
+    border-radius: 14px;
   }
-  to {
-    transform: rotate(360deg);
+  .start-game-btn {
+    font-size: 1.07rem;
+    padding: 13px 17vw;
   }
 }
 
 /* Responsive design for mobile */
 @media (max-width: 768px) {
-  .theme-toggle {
-    top: 10px;
-    right: 10px;
-    padding: 8px 16px;
-    font-size: 12px;
+  .ttt-board {
+    width: min(97vw, 292px);
+    border-radius: 13px;
+  }
+  .start-game-btn {
+    font-size: 1.01rem;
+    padding: 11px 9vw;
   }
 }

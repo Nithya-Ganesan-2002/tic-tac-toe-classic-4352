@@ -69,25 +69,33 @@ function getAIMove(squares, aiMark, humanMark) {
  * Main App component for Tic Tac Toe.
  * Adds a Start Game feature: board and controls only display once started.
  */
-// PUBLIC_INTERFACE
+/*
+ * PUBLIC_INTERFACE
+ * Enhanced UI version: Modern minimalistic, light style, beautiful spacing and effects
+ */
 function App() {
-  // 'X' always starts
+  // Game state hooks
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
-  const [mode, setMode] = useState('human'); // 'human' or 'ai'
-  const [aiPlays, setAIPlays] = useState('O'); // Which symbol does AI play as ('X' or 'O')
+  const [mode, setMode] = useState('human');
+  const [aiPlays, setAIPlays] = useState('O');
   const [status, setStatus] = useState('');
   const [winner, setWinner] = useState(null);
   const [draw, setDraw] = useState(false);
-
   const [gameStarted, setGameStarted] = useState(false);
 
-  // Handle game result
+  // Handle game result and UI status updates
   useEffect(() => {
     const win = calculateWinner(squares);
     if (win) {
       setWinner(win);
-      setStatus(win === 'X' ? 'Player X wins!' : mode === 'ai' && win === aiPlays ? 'AI wins!' : `Player ${win} wins!`);
+      setStatus(
+        win === 'X'
+          ? 'Player X wins!'
+          : mode === 'ai' && win === aiPlays
+          ? 'AI wins!'
+          : `Player ${win} wins!`
+      );
       setDraw(false);
     } else if (isBoardFull(squares)) {
       setWinner(null);
@@ -97,7 +105,10 @@ function App() {
       setWinner(null);
       setDraw(false);
       if (mode === 'ai') {
-        if ((aiPlays === 'X' && isXNext) || (aiPlays === 'O' && !isXNext)) {
+        if (
+          (aiPlays === 'X' && isXNext) ||
+          (aiPlays === 'O' && !isXNext)
+        ) {
           setStatus('AI is thinking...');
         } else {
           setStatus(`Your turn (${isXNext ? 'X' : 'O'})`);
@@ -108,21 +119,25 @@ function App() {
     }
   }, [squares, isXNext, mode, aiPlays]);
 
-  // AI move
+  // AI move side-effect
   useEffect(() => {
     if (winner || draw || mode !== 'ai') return;
-    const aiTurn = (aiPlays === 'X' && isXNext) || (aiPlays === 'O' && !isXNext);
+    const aiTurn =
+      (aiPlays === 'X' && isXNext) || (aiPlays === 'O' && !isXNext);
     if (aiTurn) {
-      // Add delay for realism
       const timer = setTimeout(() => {
-        const move = getAIMove(squares, aiPlays, aiPlays === 'X' ? 'O' : 'X');
+        const move = getAIMove(
+          squares,
+          aiPlays,
+          aiPlays === 'X' ? 'O' : 'X'
+        );
         if (move != null) {
           const nextSquares = squares.slice();
           nextSquares[move] = aiPlays;
           setSquares(nextSquares);
-          setIsXNext(x => !x);
+          setIsXNext((x) => !x);
         }
-      }, 400); // 400ms AI "thinking"
+      }, 350);
       return () => clearTimeout(timer);
     }
   }, [squares, isXNext, mode, aiPlays, winner, draw]);
@@ -132,18 +147,20 @@ function App() {
     if (winner || draw) return;
     if (mode === 'ai') {
       const humanMark = aiPlays === 'X' ? 'O' : 'X';
-      const isHumanTurn = (humanMark === 'X' && isXNext) || (humanMark === 'O' && !isXNext);
+      const isHumanTurn =
+        (humanMark === 'X' && isXNext) ||
+        (humanMark === 'O' && !isXNext);
       if (!isHumanTurn || squares[idx]) return;
       const nextSquares = squares.slice();
       nextSquares[idx] = humanMark;
       setSquares(nextSquares);
-      setIsXNext(x => !x);
+      setIsXNext((x) => !x);
     } else {
       if (squares[idx]) return;
       const nextSquares = squares.slice();
       nextSquares[idx] = isXNext ? 'X' : 'O';
       setSquares(nextSquares);
-      setIsXNext(x => !x);
+      setIsXNext((x) => !x);
     }
   }
 
@@ -155,7 +172,7 @@ function App() {
     setIsXNext(true);
     setWinner(null);
     setDraw(false);
-    // AI always plays as 'O' by default
+    // AI always plays 'O' by default
     if (v === 'ai') setAIPlays('O');
   }
 
@@ -183,246 +200,416 @@ function App() {
     setIsXNext(true);
     setWinner(null);
     setDraw(false);
-    // Only return to menu if game has already ended
-    if (winner || draw) {
-      setGameStarted(false);
-    }
+    if (winner || draw) setGameStarted(false);
   }
 
-  // Minimalistic Board:
+  // Component: Animated underline for header
+  function AnimatedUnderline() {
+    return (
+      <div
+        style={{
+          margin: "0.25em auto 0",
+          width: 64,
+          height: 4.5,
+          background:
+            "linear-gradient(90deg,#1976d2 55%, #ffca28 80%, #fff0 100%)",
+          borderRadius: 3,
+        }}
+      />
+    );
+  }
+
+  // Minimalistic Board rendering, with ripple animation on click
   function renderSquare(idx) {
     return (
       <button
         className="ttt-square"
         onClick={() => handleClick(idx)}
-        disabled={!!squares[idx] || winner || draw ||
-          (mode === 'ai' && aiPlays === (isXNext ? 'X' : 'O'))}
+        disabled={
+          !!squares[idx] ||
+          winner ||
+          draw ||
+          (mode === 'ai' && aiPlays === (isXNext ? 'X' : 'O'))
+        }
         style={{
-          color: squares[idx] === 'X'
-            ? COLORS.primary
-            : squares[idx] === 'O'
+          color:
+            squares[idx] === 'X'
+              ? COLORS.primary
+              : squares[idx] === 'O'
               ? COLORS.accent
               : COLORS.secondary,
-          borderColor: COLORS.primary,
+          borderColor: squares[idx]
+            ? (squares[idx] === 'X'
+                ? COLORS.primary
+                : COLORS.accent)
+            : COLORS.primary,
           background: '#fff',
+          position: "relative",
+          outline: "none"
         }}
-        aria-label={squares[idx] ? squares[idx] : `Empty Square ${idx+1}`}
+        aria-label={squares[idx] ? squares[idx] : `Empty Square ${idx + 1}`}
         key={idx}
-      >{squares[idx]}</button>
+      >
+        {squares[idx]}
+        {/* Ripple/hover highlight (pure CSS) */}
+        {/* This empty div is for extra effect via .ttt-square:focus-visible in CSS. */}
+        <span className="ttt-square-effect" />
+      </button>
     );
   }
 
-  // Only show Start Game button if game has not started
+  // Main Menu UI
   if (!gameStarted) {
     return (
-      <div className="App" style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-        <header style={{margin: '40px 0 10px', textAlign: 'center'}}>
+      <div
+        className="App"
+        style={{
+          minHeight: '100vh',
+          background: '#fff',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <header
+          style={{
+            width: '100%',
+            margin: '52px 0 10px',
+            textAlign: 'center',
+            padding: 0
+          }}
+        >
           <h1
             style={{
-              fontWeight: '700',
-              letterSpacing: '2px',
+              fontWeight: 700,
+              letterSpacing: '2.1px',
               color: COLORS.primary,
-              fontSize: '2.1rem',
-              marginBottom: '0.25em',
+              fontSize: '2.25rem',
+              marginBottom: 0,
+              lineHeight: 1.11
             }}
           >
             Tic Tac Toe
           </h1>
-          <p style={{color: COLORS.secondary, fontSize: '1.15rem', margin: 0}}>
-            Classic game – two players or play against AI.
+          <AnimatedUnderline />
+          <p
+            style={{
+              color: COLORS.secondary,
+              fontSize: '1.14rem',
+              margin: 0,
+              marginTop: 8,
+              fontWeight: 400,
+              letterSpacing: '.01em'
+            }}
+          >
+            Classic game · Minimal React UI
           </p>
         </header>
-        {/* Game mode selection, but faded/inactive */}
-        <section style={{
-          width: '100vw',
-          maxWidth: 'min(400px,90vw)',
-          margin: '0 auto',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            display: 'flex', flexDirection: 'row', gap: '1em',
-            marginBottom: '2.1em', justifyContent: 'center'
-          }}>
-            <label style={{fontSize:14, fontWeight: 500, opacity: 0.85}}>Mode:
-              <select value={mode} onChange={handleModeChange}
+        <section
+          style={{
+            width: '100vw',
+            maxWidth: 'min(410px,96vw)',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '0.95em',
+              marginBottom: '2em',
+              justifyContent: 'center',
+            }}
+          >
+            <label style={{
+              fontSize: 15,
+              fontWeight: 500,
+              opacity: 0.82,
+              letterSpacing: ".03em",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              Mode:
+              <select
+                value={mode}
+                onChange={handleModeChange}
                 style={{
-                  marginLeft: 6,
+                  marginLeft: 5,
                   fontFamily: 'inherit',
                   fontWeight: 600,
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.secondary}`,
-                  padding: '3px 10px'
-                }}>
+                  borderRadius: 7,
+                  border: `1.2px solid ${COLORS.secondary}`,
+                  padding: "5px 13px",
+                  fontSize: 15,
+                  color: COLORS.primary,
+                  background: "#f9f9f9"
+                }}
+              >
                 <option value="human">2 Players</option>
                 <option value="ai">Play vs AI</option>
               </select>
             </label>
-            {mode === 'ai' &&
-              <label style={{fontSize:14, fontWeight: 500, opacity: 0.85}}>
-                AI plays as:
-                <select value={aiPlays} onChange={handleAIPlaysChange}
+            {mode === 'ai' && (
+              <label style={{
+                fontSize: 15,
+                fontWeight: 500,
+                opacity: 0.82,
+                marginLeft: 3,
+                letterSpacing: ".02em",
+                display: "flex",
+                alignItems: "center"
+              }}>
+                AI as&nbsp;
+                <select
+                  value={aiPlays}
+                  onChange={handleAIPlaysChange}
                   style={{
-                    marginLeft: 6,
+                    marginLeft: 1,
                     fontFamily: 'inherit',
                     fontWeight: 600,
-                    borderRadius: 6,
-                    border: `1px solid ${COLORS.secondary}`,
-                    padding: '3px 7px'
-                  }}>
+                    borderRadius: 7,
+                    border: `1.2px solid ${COLORS.secondary}`,
+                    padding: "5px 10px",
+                    fontSize: 15,
+                    color: COLORS.accent,
+                    background: "#f9f9f9"
+                  }}
+                >
                   <option value="O">O</option>
                   <option value="X">X</option>
                 </select>
               </label>
-            }
+            )}
           </div>
           <button
             className="start-game-btn"
             onClick={handleStart}
             tabIndex={0}
           >
-            Start Game
+            <span style={{
+              fontWeight: 700,
+              letterSpacing: ".06em",
+              textShadow: `0 2.5px 14px rgba(25,118,210,0.07)`,
+            }}>
+              Start Game
+            </span>
           </button>
         </section>
-        <footer style={{
-          fontSize: '13px',
-          color: COLORS.secondary,
-          marginTop: '4em',
-          padding: '10px 0',
-          letterSpacing: '0.04rem'
-        }}>
-          &copy; {new Date().getFullYear()} Minimalistic React Tic Tac Toe
+        <footer
+          style={{
+            fontSize: '13.5px',
+            color: COLORS.secondary,
+            marginTop: '4em',
+            padding: '10px 0',
+            letterSpacing: '.042rem',
+            opacity: 0.85
+          }}
+        >
+          &copy; {new Date().getFullYear()} Minimal Tic Tac Toe
         </footer>
       </div>
     );
   }
 
+  // In-game UI
   return (
-    <div className="App" style={{ minHeight: '100vh', background: '#fff' }}>
-      <header style={{margin: '40px 0 10px', textAlign: 'center'}}>
+    <div
+      className="App"
+      style={{
+        minHeight: '100vh',
+        background: '#fff',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}
+    >
+      <header
+        style={{
+          width: '100%',
+          margin: '52px 0 16px',
+          textAlign: 'center',
+          padding: 0
+        }}
+      >
         <h1
           style={{
-            fontWeight: '700',
-            letterSpacing: '2px',
+            fontWeight: 700,
+            letterSpacing: '2.1px',
             color: COLORS.primary,
-            fontSize: '2.1rem',
-            marginBottom: '0.25em',
+            fontSize: '2.25rem',
+            marginBottom: 0,
+            lineHeight: 1.12
           }}
         >
           Tic Tac Toe
         </h1>
-        <p style={{color: COLORS.secondary, fontSize: '1.15rem', margin: 0}}>
-          Classic game – two players or play against AI.
+        <AnimatedUnderline />
+        <p
+          style={{
+            color: COLORS.secondary,
+            fontSize: '1.13rem',
+            margin: 0,
+            marginTop: 8,
+            fontWeight: 400
+          }}
+        >
+          Classic game · {mode === "human" ? "2 Players" : "Play vs AI"}
         </p>
       </header>
-      <section style={{
-        width: '100vw',
-        maxWidth: 'min(400px,90vw)',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}>
-        {/* Controls */}
-        <div style={{
-          display: 'flex', flexDirection: 'row', gap: '1em',
-          marginBottom: '1.5em', justifyContent: 'center'
-        }}>
-          <label style={{fontSize:14, fontWeight: 500}}>Mode:
-            <select value={mode} onChange={handleModeChange}
+      <section
+        style={{
+          width: '100vw',
+          maxWidth: 'min(410px,96vw)',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        {/* Control Bar */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1em',
+            marginBottom: 21,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <label style={{
+            fontSize: 15,
+            fontWeight: 500,
+            letterSpacing: ".025em"
+          }}>
+            Mode:
+            <select
+              value={mode}
+              onChange={handleModeChange}
               style={{
-                marginLeft: 6,
+                marginLeft: 4,
                 fontFamily: 'inherit',
                 fontWeight: 600,
-                borderRadius: 6,
-                border: `1px solid ${COLORS.secondary}`,
-                padding: '3px 10px'
-              }}>
+                borderRadius: 7,
+                border: `1.2px solid ${COLORS.secondary}`,
+                padding: "4px 11px",
+                fontSize: 15,
+                color: COLORS.primary,
+                background: "#f9f9f9",
+              }}
+            >
               <option value="human">2 Players</option>
               <option value="ai">Play vs AI</option>
             </select>
           </label>
-          {mode === 'ai' &&
-            <label style={{fontSize:14, fontWeight: 500}}>
-              AI plays as:
-              <select value={aiPlays} onChange={handleAIPlaysChange}
+          {mode === 'ai' && (
+            <label style={{
+              fontSize: 15,
+              fontWeight: 500,
+              marginLeft: 3,
+              letterSpacing: ".02em"
+            }}>
+              AI as&nbsp;
+              <select
+                value={aiPlays}
+                onChange={handleAIPlaysChange}
                 style={{
-                  marginLeft: 6,
+                  marginLeft: 1,
                   fontFamily: 'inherit',
                   fontWeight: 600,
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.secondary}`,
-                  padding: '3px 7px'
-                }}>
+                  borderRadius: 7,
+                  border: `1.2px solid ${COLORS.secondary}`,
+                  padding: "4px 9px",
+                  fontSize: 15,
+                  color: COLORS.accent,
+                  background: "#f9f9f9"
+                }}
+              >
                 <option value="O">O</option>
                 <option value="X">X</option>
               </select>
             </label>
-          }
+          )}
           <button
+            className="start-game-btn"
             onClick={handleReset}
             style={{
-              marginLeft: 16,
-              border: 'none',
-              borderRadius: 6,
-              background: COLORS.primary,
-              color: '#fff',
+              marginLeft: 12,
+              padding: "7px 20px",
+              fontSize: 15.2,
+              background: winner
+                ? COLORS.accent
+                : draw
+                ? COLORS.secondary
+                : COLORS.primary,
+              color: "#fff",
+              borderRadius: 9,
+              border: "none",
+              boxShadow:
+                "0px 3px 16px 0px rgba(25, 118, 210, 0.03)",
+              opacity: winner || draw ? 0.96 : 1.0,
               fontWeight: 600,
-              cursor: 'pointer',
-              fontSize: 15,
-              padding: '4px 15px',
-              transition: 'filter 0.23s',
-              boxShadow: '0px 2px 8px 1px rgba(25, 118, 210, 0.08)',
+              letterSpacing: ".04em"
             }}
           >
             {winner || draw ? "Back to Menu" : "Reset"}
           </button>
         </div>
 
-        {/* Board */}
+        {/* Game Board */}
         <div
           className="ttt-board"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            width: 'min(320px, 90vw)',
+            width: 'min(330px,95vw)',
             aspectRatio: '1',
             background: '#fff',
             border: `2.4px solid ${COLORS.primary}`,
             borderRadius: '17px',
-            boxShadow: '0 3px 18px rgba(25, 118, 210, 0.07)',
-          }}>
-          {Array(9).fill(0).map((_, i) => renderSquare(i))}
+            boxShadow: '0 3.5px 22px rgba(25, 118, 210, 0.13)',
+          }}
+        >
+          {Array(9)
+            .fill(0)
+            .map((_, i) => renderSquare(i))}
         </div>
 
-        {/* Status */}
-        <div className="game-status" style={{
-          textAlign: 'center',
-          margin: '28px 0 0',
-          fontWeight: 600,
-          color: winner
-            ? COLORS.accent
-            : draw
-            ? COLORS.secondary
-            : COLORS.primary,
-          fontSize: '1.16rem',
-          minHeight: '2em',
-        }}>
+        {/* Game status */}
+        <div
+          className="game-status"
+          style={{
+            textAlign: 'center',
+            margin: '28px 0 0',
+            fontWeight: 650,
+            color: winner
+              ? COLORS.accent
+              : draw
+              ? COLORS.secondary
+              : COLORS.primary,
+            fontSize: '1.2rem',
+            minHeight: '2em',
+            letterSpacing: ".015em"
+          }}
+        >
           {status}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer style={{
-        fontSize: '13px',
-        color: COLORS.secondary,
-        marginTop: '4em',
-        padding: '10px 0',
-        letterSpacing: '0.04rem'
-      }}>
-        &copy; {new Date().getFullYear()} Minimalistic React Tic Tac Toe
+      <footer
+        style={{
+          fontSize: '13.5px',
+          color: COLORS.secondary,
+          marginTop: '4em',
+          padding: '10px 0',
+          letterSpacing: '.042rem',
+          opacity: 0.88
+        }}
+      >
+        &copy; {new Date().getFullYear()} Minimal Tic Tac Toe
       </footer>
     </div>
   );
