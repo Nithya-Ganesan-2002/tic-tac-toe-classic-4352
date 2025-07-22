@@ -65,6 +65,10 @@ function getAIMove(squares, aiMark, humanMark) {
   return null;
 }
 
+/**
+ * Main App component for Tic Tac Toe.
+ * Adds a Start Game feature: board and controls only display once started.
+ */
 // PUBLIC_INTERFACE
 function App() {
   // 'X' always starts
@@ -75,6 +79,8 @@ function App() {
   const [status, setStatus] = useState('');
   const [winner, setWinner] = useState(null);
   const [draw, setDraw] = useState(false);
+
+  const [gameStarted, setGameStarted] = useState(false);
 
   // Handle game result
   useEffect(() => {
@@ -163,11 +169,24 @@ function App() {
   }
 
   // PUBLIC_INTERFACE
+  function handleStart() {
+    setSquares(Array(9).fill(null));
+    setIsXNext(true);
+    setWinner(null);
+    setDraw(false);
+    setGameStarted(true);
+  }
+
+  // PUBLIC_INTERFACE
   function handleReset() {
     setSquares(Array(9).fill(null));
     setIsXNext(true);
     setWinner(null);
     setDraw(false);
+    // Only return to menu if game has already ended
+    if (winner || draw) {
+      setGameStarted(false);
+    }
   }
 
   // Minimalistic Board:
@@ -190,6 +209,93 @@ function App() {
         aria-label={squares[idx] ? squares[idx] : `Empty Square ${idx+1}`}
         key={idx}
       >{squares[idx]}</button>
+    );
+  }
+
+  // Only show Start Game button if game has not started
+  if (!gameStarted) {
+    return (
+      <div className="App" style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+        <header style={{margin: '40px 0 10px', textAlign: 'center'}}>
+          <h1
+            style={{
+              fontWeight: '700',
+              letterSpacing: '2px',
+              color: COLORS.primary,
+              fontSize: '2.1rem',
+              marginBottom: '0.25em',
+            }}
+          >
+            Tic Tac Toe
+          </h1>
+          <p style={{color: COLORS.secondary, fontSize: '1.15rem', margin: 0}}>
+            Classic game – two players or play against AI.
+          </p>
+        </header>
+        {/* Game mode selection, but faded/inactive */}
+        <section style={{
+          width: '100vw',
+          maxWidth: 'min(400px,90vw)',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            display: 'flex', flexDirection: 'row', gap: '1em',
+            marginBottom: '2.1em', justifyContent: 'center'
+          }}>
+            <label style={{fontSize:14, fontWeight: 500, opacity: 0.85}}>Mode:
+              <select value={mode} onChange={handleModeChange}
+                style={{
+                  marginLeft: 6,
+                  fontFamily: 'inherit',
+                  fontWeight: 600,
+                  borderRadius: 6,
+                  border: `1px solid ${COLORS.secondary}`,
+                  padding: '3px 10px'
+                }}>
+                <option value="human">2 Players</option>
+                <option value="ai">Play vs AI</option>
+              </select>
+            </label>
+            {mode === 'ai' &&
+              <label style={{fontSize:14, fontWeight: 500, opacity: 0.85}}>
+                AI plays as:
+                <select value={aiPlays} onChange={handleAIPlaysChange}
+                  style={{
+                    marginLeft: 6,
+                    fontFamily: 'inherit',
+                    fontWeight: 600,
+                    borderRadius: 6,
+                    border: `1px solid ${COLORS.secondary}`,
+                    padding: '3px 7px'
+                  }}>
+                  <option value="O">O</option>
+                  <option value="X">X</option>
+                </select>
+              </label>
+            }
+          </div>
+          <button
+            className="start-game-btn"
+            onClick={handleStart}
+            tabIndex={0}
+          >
+            Start Game
+          </button>
+        </section>
+        <footer style={{
+          fontSize: '13px',
+          color: COLORS.secondary,
+          marginTop: '4em',
+          padding: '10px 0',
+          letterSpacing: '0.04rem'
+        }}>
+          &copy; {new Date().getFullYear()} Minimalistic React Tic Tac Toe
+        </footer>
+      </div>
     );
   }
 
@@ -271,7 +377,7 @@ function App() {
               boxShadow: '0px 2px 8px 1px rgba(25, 118, 210, 0.08)',
             }}
           >
-            Reset
+            {winner || draw ? "Back to Menu" : "Reset"}
           </button>
         </div>
 

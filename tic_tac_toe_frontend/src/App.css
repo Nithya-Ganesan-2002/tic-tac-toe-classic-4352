@@ -57,6 +57,35 @@
   width: min(320px, 90vw);
   aspect-ratio: 1;
 }
+
+/* --- Start Game Button (minimalistic, light palette) --- */
+.start-game-btn {
+  display: inline-block;
+  margin: 0 auto 1em auto;
+  font-size: 1.12rem;
+  font-weight: 600;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 35px;
+  box-shadow: 0 2.5px 16px rgba(25,118,210,0.055);
+  cursor: pointer;
+  letter-spacing: 0.065em;
+  transition: background 0.2s, box-shadow 0.22s, transform 0.11s;
+}
+.start-game-btn:hover,
+.start-game-btn:focus {
+  background: #1256a6;
+  box-shadow: 0 3.5px 20px rgba(25,118,210,0.18);
+  outline: none;
+  transform: translateY(-2px) scale(1.025);
+  opacity: 0.95;
+}
+.start-game-btn:active {
+  background: #0b3765;
+  transform: translateY(0);
+}
 .ttt-square {
   width: 100%;
   aspect-ratio: 1;
