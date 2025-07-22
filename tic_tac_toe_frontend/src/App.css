@@ -18,6 +18,11 @@
   --border-color: #e5eaf5;
 }
 
+/* 3D effect for in-game reset/back-to-menu button (shares .start-game-btn styles, but allow override if needed) */
+.start-game-btn:active {
+  /* already handled above, applies for both Start and Reset button */
+}
+
 [data-theme="dark"] {
   /* Dark theme colors */
   --bg-primary: #1a1a1a;
@@ -61,9 +66,16 @@
   box-shadow: var(--button-shadow);
   cursor: pointer;
   letter-spacing: 0.08em;
-  transition: background .16s, box-shadow .21s, transform .13s, opacity .17s;
+  transition: 
+    background .16s, 
+    box-shadow .21s, 
+    transform .13s, 
+    opacity .17s,
+    filter .12s;
   position: relative;
   outline: none;
+  /* For 3D shadow depth on active */
+  will-change: transform, box-shadow, filter;
 }
 .start-game-btn:hover,
 .start-game-btn:focus-visible {
@@ -74,7 +86,10 @@
 }
 .start-game-btn:active {
   background: #0b3765;
-  transform: translateY(0);
+  /* 3D press-in effect */
+  box-shadow: 0 1px 4px rgba(25,118,210,0.15), 0 1.5px 0 var(--button-bg) inset;
+  transform: translateY(3px) scale(0.97);
+  filter: brightness(98%);
 }
 
 .ttt-square {
